@@ -1,7 +1,10 @@
+ARG NGINX_VERSION=1.13.7
+
 FROM debian:stretch-slim as builder
+ARG NGINX_VERSION
 ENV LUA_VERSION 5.1
 ENV LUAJIT2_VERSION 2.1-20171103
-ENV NGINX_VERSION 1.13.7
+ENV NGINX_VERSION ${NGINX_VERSION}
 ENV NGINX_NDK_VERSION 0.3.0
 ENV NGINX_LUA_HTTP_MODULE_VERSION 0.10.11
 ENV NGINX_LUA_STREAM_MODULE_VERSION 0.0.3
@@ -20,6 +23,9 @@ RUN set -x \
   && make -j2 \
   && make install
 RUN set -x \
+  && wget http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz \
+  && tar -xzvf nginx-${NGINX_VERSION}.tar.gz
+RUN set -x \
   && wget -O nginx-ndk-${NGINX_NDK_VERSION}.tar.gz https://github.com/simpl/ngx_devel_kit/archive/v${NGINX_NDK_VERSION}.tar.gz \
   && tar -xzvf nginx-ndk-${NGINX_NDK_VERSION}.tar.gz
 RUN set -x \
@@ -28,9 +34,6 @@ RUN set -x \
 RUN set -x \
   && wget -O stream-lua-nginx-module-${NGINX_LUA_STREAM_MODULE_VERSION}.tar.gz https://github.com/openresty/stream-lua-nginx-module/archive/v${NGINX_LUA_STREAM_MODULE_VERSION}.tar.gz \
   && tar -xzvf stream-lua-nginx-module-${NGINX_LUA_STREAM_MODULE_VERSION}.tar.gz
-RUN set -x \
-  && wget http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz \
-  && tar -xzvf nginx-${NGINX_VERSION}.tar.gz
 RUN set -x \
   && wget -O lua-resty-lrucache-${NGINX_LUA_RESTY_LRUCACHE_VERSION}.tar.gz https://github.com/openresty/lua-resty-lrucache/archive/v${NGINX_LUA_RESTY_LRUCACHE_VERSION}.tar.gz \
   && tar -xzvf lua-resty-lrucache-${NGINX_LUA_RESTY_LRUCACHE_VERSION}.tar.gz
@@ -101,7 +104,7 @@ RUN set -x \
   && cd lua-nginx-split-clients-${NGINX_LUA_SPLIT_CLIENTS_VERSION} \
   && make install
 
-FROM nginx:mainline
+FROM nginx:${NGINX_VERSION}
 LABEL maintainer="Boris Gorbylev <ekho@ekho.name>"
 RUN set -x \
 	&& apt-get update \
