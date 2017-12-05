@@ -7,6 +7,7 @@ ENV NGINX_LUA_HTTP_MODULE_VERSION 0.10.11
 ENV NGINX_LUA_STREAM_MODULE_VERSION 0.0.3
 ENV NGINX_LUA_RESTY_CORE_VERSION 0.1.13
 ENV NGINX_LUA_RESTY_LRUCACHE_VERSION 0.07
+ENV NGINX_LUA_SPLIT_CLIENTS_VERSION 0.0.2
 
 WORKDIR /opt
 RUN set -x \
@@ -36,6 +37,9 @@ RUN set -x \
 RUN set -x \
   && wget -O lua-resty-core-${NGINX_LUA_RESTY_CORE_VERSION}.tar.gz https://github.com/openresty/lua-resty-core/archive/v${NGINX_LUA_RESTY_CORE_VERSION}.tar.gz \
   && tar -xzvf lua-resty-core-${NGINX_LUA_RESTY_CORE_VERSION}.tar.gz
+RUN set -x \
+  && wget -O lua-nginx-split-clients-${NGINX_LUA_SPLIT_CLIENTS_VERSION}.tar.gz https://github.com/ekho/lua-nginx-split-clients/archive/v${NGINX_LUA_SPLIT_CLIENTS_VERSION}.tar.gz \
+  && tar -xzvf lua-nginx-split-clients-${NGINX_LUA_SPLIT_CLIENTS_VERSION}.tar.gz
 RUN set -x \
   && cd nginx-${NGINX_VERSION}/ \
   && export LUAJIT_LIB=/usr/local/lib \
@@ -92,6 +96,9 @@ RUN set -x \
   && make install
 RUN set -x \
   && cd lua-resty-core-${NGINX_LUA_RESTY_CORE_VERSION} \
+  && make install
+RUN set -x \
+  && cd lua-nginx-split-clients-${NGINX_LUA_SPLIT_CLIENTS_VERSION} \
   && make install
 
 FROM nginx:mainline
