@@ -1,7 +1,5 @@
+FROM debian:stretch-slim
 ARG NGINX_VERSION=1.13.7
-
-FROM debian:stretch-slim as builder
-ARG NGINX_VERSION
 ENV LUA_VERSION 5.1
 ENV LUAJIT2_VERSION 2.1-20171103
 ENV NGINX_VERSION ${NGINX_VERSION}
@@ -111,6 +109,6 @@ RUN set -x \
 	&& apt-get install -y libssl1.0.2 \
 	&& apt-get purge -y --auto-remove \
 	&& rm -rf /var/lib/apt/lists/*
-COPY --from=builder /usr/sbin/nginx /usr/sbin/nginx
-COPY --from=builder /usr/local/lib/libluajit-5.1.so.2.1.0 /usr/lib/x86_64-linux-gnu/libluajit-5.1.so.2
-COPY --from=builder /usr/local/lib/lua /usr/local/share/lua
+COPY --from=0 /usr/sbin/nginx /usr/sbin/nginx
+COPY --from=0 /usr/local/lib/libluajit-5.1.so.2.1.0 /usr/lib/x86_64-linux-gnu/libluajit-5.1.so.2
+COPY --from=0 /usr/local/lib/lua /usr/local/share/lua
